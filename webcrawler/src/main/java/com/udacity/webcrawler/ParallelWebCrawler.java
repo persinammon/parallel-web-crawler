@@ -58,7 +58,7 @@ final class ParallelWebCrawler implements WebCrawler {
   public CrawlResult crawl(List<String> startingUrls) {
     Instant deadline = clock.instant().plus(timeout);
 
-    System.out.println("refr to original visitedurls" + visitedUrls);
+    //System.out.println("refr to original visitedurls" + visitedUrls);
 
     //fix crawl factory instantiation to hide Impl? dependency injection?
     crawlFactory = new CrawlActionFactoryImpl(deadline, clock, maxDepth, ignoredUrls);
@@ -68,7 +68,7 @@ final class ParallelWebCrawler implements WebCrawler {
       pool.execute(crawlFactory.get(url));
     }
 
-    System.out.println("Visited urls" +  visitedUrls.toString());
+    System.out.println("After visited urls" +  ParallelWebCrawler.visitedUrls.toString());
 
     if (counts.isEmpty()) {
       return new CrawlResult.Builder()

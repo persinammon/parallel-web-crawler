@@ -65,9 +65,7 @@ public final class CrawlAction extends RecursiveAction {
         }
         ParallelWebCrawler.visitedUrls.add(url);
         System.out.println("BREAKPOINT? visited urls " + ParallelWebCrawler.visitedUrls.toString());
-        System.out.println("Refr to visitted urls" + visitedUrls);
 
-        System.out.println("Parser factory: " + parserFactory.toString());
         PageParser.Result result = parserFactory.get(url).parse();
         for (Map.Entry<String, Integer> e : result.getWordCounts().entrySet()) {
             ParallelWebCrawler.counts.compute(e.getKey(), (k, v) -> (v == null) ? e.getValue() : v + e.getValue());
