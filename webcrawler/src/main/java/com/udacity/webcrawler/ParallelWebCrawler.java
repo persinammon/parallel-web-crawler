@@ -59,7 +59,7 @@ final class ParallelWebCrawler implements WebCrawler {
     Set<String> visitedUrls = Collections.synchronizedSet(new HashSet<>());
 
     //fix crawl factory instantiation to hide Impl? dependency injection?
-    crawlFactory = new CrawlActionFactoryImpl(deadline, counts, visitedUrls, clock, maxDepth, ignoredUrls, parserFactory);
+    crawlFactory = new CrawlActionFactoryImpl(deadline, counts, visitedUrls, clock, maxDepth, ignoredUrls);
     //System.out.println(crawlFactory.get(startingUrls.get(0)).toString());
 
     for (String url : startingUrls) {

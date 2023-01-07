@@ -21,25 +21,29 @@ public class CrawlActionFactoryImpl implements  CrawlActionFactory {
 
     private List<Pattern> ignoredUrls;
 
-    private PageParserFactory parserFactory;
-
+    private int maxDepth;
 
     public CrawlActionFactoryImpl(Instant deadline, Map<String, Integer>  counts, Set<String> visitedUrls,
-                                  Clock clock,List<Pattern> ignoredUrls, PageParserFactory parserFactory) {
+                                  Clock clock, int maxDepth, List<Pattern> ignoredUrls) {
         this.deadline = deadline;
         this.counts = counts;
         this.visitedUrls = visitedUrls;
         this.clock = clock;
+        this.maxDepth = maxDepth;
         this.ignoredUrls = ignoredUrls;
-        this.parserFactory = parserFactory;
     }
+
     @Override
     public CrawlAction get(String url) {
         CrawlAction.Builder crawlBuild = new CrawlAction.Builder();
         crawlBuild.setCounts(counts);
         crawlBuild.setDeadline(deadline);
         crawlBuild.setVisitedUrls(visitedUrls);
+        crawlBuild.setMaxDepth(maxDepth);
+        crawlBuild.setIgnoredUrls(ignoredUrls);
+        crawlBuild.setClock(clock);
         crawlBuild.setUrl(url);
+
         return crawlBuild.build();
     }
 

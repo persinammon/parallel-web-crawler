@@ -28,21 +28,24 @@ public final class CrawlAction extends RecursiveAction {
 
     private final List<Pattern>  ignoredUrls;
 
-    private final PageParserFactory parserFactory;
+    private final int maxDepth;
+
+    @Inject
+    private PageParserFactory parserFactory;
 
 
     /**
      * Private constructor so can use the Builder pattern.
      */
-    private CrawlAction(String url, Instant deadline, Map<String, Integer>  counts, Set<String> visitedUrls,
-                        Clock clock, List<Pattern> ignoredUrls, PageParserFactory parserFactory) {
+    private CrawlAction(String url, Instant deadline, Map<String, Integer> counts, Set<String> visitedUrls,
+                        Clock clock, List<Pattern> ignoredUrls, int maxDepth) {
         this.url = url;
         this.deadline = deadline;
         this.counts = counts;
         this.visitedUrls = visitedUrls;
         this.clock = clock;
         this.ignoredUrls = ignoredUrls;
-        this.parserFactory = parserFactory;
+        this.maxDepth = maxDepth;
     }
     @Override
     protected void compute() {
@@ -56,10 +59,12 @@ public final class CrawlAction extends RecursiveAction {
             }
         }
 
+        //not thread-safe
         if (visitedUrls.contains(url)) {
             return;
         }
         visitedUrls.add(url);
+
         PageParser.Result result = parserFactory.get(url).parse();
         for (Map.Entry<String, Integer> e : result.getWordCounts().entrySet()) {
             counts.compute(e.getKey(), (k, v) -> (v == null) ? e.getValue() : v + e.getValue());
@@ -67,7 +72,7 @@ public final class CrawlAction extends RecursiveAction {
         List<CrawlAction> newActions = new ArrayList<CrawlAction>();
         for (String link : result.getLinks()) {
             newActions.add(new CrawlAction(link, this.deadline, this.counts, this.visitedUrls,
-                                        this.clock, this.ignoredUrls, this.parserFactory));
+                                        this.clock, this.ignoredUrls, this.maxDepth));
         }
         invokeAll(newActions);
     }
@@ -84,8 +89,7 @@ public final class CrawlAction extends RecursiveAction {
 
         private List<Pattern> ignoredUrlsBuild;
 
-        private PageParserFactory parserFactoryBuild;
-
+        private int maxDepthBuild;
 
         public Builder setUrl(String url) {
             this.urlBuild = url;
@@ -116,15 +120,15 @@ public final class CrawlAction extends RecursiveAction {
             return this;
         }
 
-        public Builder setParserFactor(PageParserFactory parserFactory) {
-            this.parserFactoryBuild = parserFactory;
+        public Builder setMaxDepth(int maxDepth) {
+            this.maxDepthBuild = maxDepth;
             return this;
         }
 
 
         public CrawlAction build() {
             return new CrawlAction(urlBuild, deadlineBuild, countsBuild, visitedUrlsBuild,
-                    clockBuild, ignoredUrlsBuild, parserFactoryBuild);
+                    clockBuild, ignoredUrlsBuild, maxDepthBuild);
         }
     }
 }
