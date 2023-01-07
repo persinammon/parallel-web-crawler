@@ -20,9 +20,9 @@ public final class CrawlAction extends RecursiveAction {
     private final String url;
     private final Instant deadline;
 
-    private final Map<String, Integer>  counts;
+    private Map<String, Integer> counts;
 
-    private final Set<String> visitedUrls;
+    private Set<String> visitedUrls;
 
     private final Clock clock;
 
@@ -37,18 +37,17 @@ public final class CrawlAction extends RecursiveAction {
     /**
      * Private constructor so can use the Builder pattern.
      */
-    private CrawlAction(String url, Instant deadline, Map<String, Integer> counts, Set<String> visitedUrls,
+    private CrawlAction(String url, Instant deadline,
                         Clock clock, List<Pattern> ignoredUrls, int maxDepth) {
         this.url = url;
         this.deadline = deadline;
-        this.counts = counts;
-        this.visitedUrls = visitedUrls;
         this.clock = clock;
         this.ignoredUrls = ignoredUrls;
         this.maxDepth = maxDepth;
     }
     @Override
     protected void compute() {
+        System.out.println("compute reached");
 
         if (clock.instant().isAfter(deadline)) {
             return;
@@ -60,18 +59,23 @@ public final class CrawlAction extends RecursiveAction {
         }
 
         //not thread-safe
-        if (visitedUrls.contains(url)) {
+        if (ParallelWebCrawler.visitedUrls.contains(url)) {
+            System.out.println("visited urls fired");
             return;
         }
-        visitedUrls.add(url);
+        ParallelWebCrawler.visitedUrls.add(url);
+        System.out.println("BREAKPOINT? visited urls " + ParallelWebCrawler.visitedUrls.toString());
+        System.out.println("Refr to visitted urls" + visitedUrls);
 
+        System.out.println("Parser factory: " + parserFactory.toString());
         PageParser.Result result = parserFactory.get(url).parse();
         for (Map.Entry<String, Integer> e : result.getWordCounts().entrySet()) {
-            counts.compute(e.getKey(), (k, v) -> (v == null) ? e.getValue() : v + e.getValue());
+            ParallelWebCrawler.counts.compute(e.getKey(), (k, v) -> (v == null) ? e.getValue() : v + e.getValue());
         }
         List<CrawlAction> newActions = new ArrayList<CrawlAction>();
+        System.out.println("counts " + counts.toString());
         for (String link : result.getLinks()) {
-            newActions.add(new CrawlAction(link, this.deadline, this.counts, this.visitedUrls,
+            newActions.add(new CrawlAction(link, this.deadline,
                                         this.clock, this.ignoredUrls, this.maxDepth));
         }
         invokeAll(newActions);
@@ -100,15 +104,7 @@ public final class CrawlAction extends RecursiveAction {
             return this;
         }
 
-        public Builder setCounts(Map<String, Integer> counts)  {
-            this.countsBuild = counts;
-            return this;
-        }
 
-        public Builder setVisitedUrls(Set<String> visitedUrls)  {
-            this.visitedUrlsBuild = visitedUrls;
-            return this;
-        }
 
         public Builder setClock(Clock clock) {
             this.clockBuild = clock;
@@ -127,7 +123,7 @@ public final class CrawlAction extends RecursiveAction {
 
 
         public CrawlAction build() {
-            return new CrawlAction(urlBuild, deadlineBuild, countsBuild, visitedUrlsBuild,
+            return new CrawlAction(urlBuild, deadlineBuild,
                     clockBuild, ignoredUrlsBuild, maxDepthBuild);
         }
     }

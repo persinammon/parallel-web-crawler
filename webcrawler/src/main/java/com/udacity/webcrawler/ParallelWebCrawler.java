@@ -49,22 +49,26 @@ final class ParallelWebCrawler implements WebCrawler {
   @Inject
   private PageParserFactory parserFactory;
 
-  private CrawlActionFactory crawlFactory;
+  private CrawlActionFactoryImpl crawlFactory;
+
+  static Map<String, Integer> counts = Collections.synchronizedMap(new HashMap<>());
+  static Set<String> visitedUrls = Collections.synchronizedSet(new HashSet<>());
 
   @Override
   public CrawlResult crawl(List<String> startingUrls) {
     Instant deadline = clock.instant().plus(timeout);
 
-    Map<String, Integer> counts = Collections.synchronizedMap(new HashMap<>());
-    Set<String> visitedUrls = Collections.synchronizedSet(new HashSet<>());
+    System.out.println("refr to original visitedurls" + visitedUrls);
 
     //fix crawl factory instantiation to hide Impl? dependency injection?
-    crawlFactory = new CrawlActionFactoryImpl(deadline, counts, visitedUrls, clock, maxDepth, ignoredUrls);
+    crawlFactory = new CrawlActionFactoryImpl(deadline, clock, maxDepth, ignoredUrls);
     //System.out.println(crawlFactory.get(startingUrls.get(0)).toString());
 
     for (String url : startingUrls) {
       pool.execute(crawlFactory.get(url));
     }
+
+    System.out.println("Visited urls" +  visitedUrls.toString());
 
     if (counts.isEmpty()) {
       return new CrawlResult.Builder()
@@ -84,4 +88,6 @@ final class ParallelWebCrawler implements WebCrawler {
   public int getMaxParallelism() {
     return Runtime.getRuntime().availableProcessors();
   }
+
+
 }
