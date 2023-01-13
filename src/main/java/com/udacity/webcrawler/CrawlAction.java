@@ -32,13 +32,15 @@ public final class CrawlAction extends RecursiveAction {
 
     private final PageParserFactory parserFactory;
 
+    private final CrawlActionFactory crawlFactory;
 
     /**
      * Private constructor so can use the Builder pattern.
      */
     private CrawlAction(String url, Instant deadline,
                         Clock clock, List<Pattern> ignoredUrls, int maxDepth, Map<String, Integer> counts,
-                        Set<String> visitedUrls, PageParserFactory parserFactory) {
+                        Set<String> visitedUrls, PageParserFactory parserFactory,
+                        CrawlActionFactory crawlFactory) {
         this.url = url;
         this.deadline = deadline;
         this.clock = clock;
@@ -47,6 +49,7 @@ public final class CrawlAction extends RecursiveAction {
         this.counts = counts;
         this.visitedUrls = visitedUrls;
         this.parserFactory = parserFactory;
+        this.crawlFactory = crawlFactory;
     }
     @Override
     protected void compute() {
@@ -73,9 +76,11 @@ public final class CrawlAction extends RecursiveAction {
         }
         List<CrawlAction> newActions = new ArrayList<CrawlAction>();
         for (String link : result.getLinks()) {
-            newActions.add(new CrawlAction(link, this.deadline,
-                                        this.clock, this.ignoredUrls, this.maxDepth-1, this.counts, this.visitedUrls,
-                                        this.parserFactory));
+            newActions.add(crawlFactory.get(link, maxDepth-1));
+
+            //newActions.add(new CrawlAction(link, this.deadline,
+                                        //this.clock, this.ignoredUrls, this.maxDepth-1, this.counts, this.visitedUrls,
+                                        //this.parserFactory));
         }
         invokeAll(newActions);
     }
@@ -95,6 +100,8 @@ public final class CrawlAction extends RecursiveAction {
         private int maxDepthBuild;
 
         private PageParserFactory parserFactoryBuild;
+
+        private CrawlActionFactory crawlFactoryBuild;
 
         public Builder setUrl(String url) {
             this.urlBuild = url;
@@ -135,11 +142,15 @@ public final class CrawlAction extends RecursiveAction {
             return this;
         }
 
+        public Builder setCrawlFactory(CrawlActionFactory crawlFactory) {
+            this.crawlFactoryBuild = crawlFactory;
+            return this;
+        }
 
         public CrawlAction build() {
             return new CrawlAction(urlBuild, deadlineBuild,
                     clockBuild, ignoredUrlsBuild, maxDepthBuild, countsBuild, visitedUrlsBuild,
-                    parserFactoryBuild);
+                    parserFactoryBuild, crawlFactoryBuild);
         }
     }
 }

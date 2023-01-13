@@ -34,9 +34,29 @@ This is a sample configuration JSON given to the web crawler.
  * The two paths are where to write performance data and the results. If unset, these are printed to standard output.
  */
 ```
-### How to Run
+### Creational Patterns and Libraries Used
+- Used Jackson to serialize and deserialize data from an Object to a JSON in `java/com/udacity/webcrawler/json/*.java`
+- Used Guice to reuse objects using dependency injection in `java/com/udacity/webcrawler/ParallelWebCrawler.java`
+- Used Builder pattern in `java/com/udacity/webcrawler/CrawlAction.java`
+- Used ForkJoinPool and recursive actions in `java/com/udacity/webcrawler/CrawlAction.java,ParallelWebCrawler.java`
+- Used Factory pattern in `java/com/udacity/webcrawler/CrawlActionFactory.java,CrawlActionFactoryImpl.java`
+- Used Streams API and lambda function to eliminate verbose for loop to find the top `k` words with the highest count across all pages crawled in
+`java/com/udacity/webcrawler/WordCounts.java`
 
+### How to Run and Test
 
+Clone and run the following to run:
+
+```
+mvn package
+java -classpath target/udacity-webcrawler-1.0.jar com.udacity.webcrawler.main.WebCrawlerMain src/main/config/sample_config.json
+```
+
+and the following to run unit tests:
+
+```
+mvn test
+```
 ### Open-Source Third Party Java Libraries
 
 - jsoup
@@ -46,10 +66,7 @@ This is a sample configuration JSON given to the web crawler.
 - JUnit 5
 - Truth
 
-### Running Tests
+### Takeaway
 
-Run:
-
-```
-mvn test
-```
+Overall, this was a fun use case and great starter project for flexing
+more industry-specific Java libraries and programming patterns.
