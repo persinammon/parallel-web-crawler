@@ -1,6 +1,7 @@
 package com.udacity.webcrawler;
 
 import com.udacity.webcrawler.json.CrawlResult;
+import com.udacity.webcrawler.json.CrawlerConfiguration;
 import com.udacity.webcrawler.parser.PageParserFactory;
 
 import javax.inject.Inject;
@@ -44,6 +45,7 @@ final class ParallelWebCrawler implements WebCrawler {
     }
     @Inject PageParserFactory parserFactory;
 
+  static CrawlActionFactory crawlFactory;
 
   @Override
   public CrawlResult crawl(List<String> startingUrls) {
@@ -52,9 +54,8 @@ final class ParallelWebCrawler implements WebCrawler {
     Map<String, Integer> counts = Collections.synchronizedMap(new HashMap<>());
     Set<String> visitedUrls = Collections.synchronizedSet(new HashSet<>());
 
-    CrawlActionFactory crawlFactory = new CrawlActionFactoryImpl(deadline, clock, maxDepth, ignoredUrls,
+    crawlFactory = new CrawlActionFactoryImpl(deadline, clock, maxDepth, ignoredUrls,
             counts, visitedUrls, parserFactory);
-    //if it works, make crawlFactory static next
 
     for (String url : startingUrls) {
       pool.invoke(crawlFactory.get(url));

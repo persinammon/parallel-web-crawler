@@ -50,7 +50,6 @@ public final class CrawlAction extends RecursiveAction {
     }
     @Override
     protected void compute() {
-        System.out.println("compute reached");
 
         if (maxDepth == 0 || clock.instant().isAfter(deadline)) {
             return;
@@ -61,20 +60,18 @@ public final class CrawlAction extends RecursiveAction {
             }
         }
 
-        //not thread-safe
-        if (visitedUrls.contains(url)) {
-            System.out.println("visited urls fired");
-            return;
+        synchronized (visitedUrls) {
+            if (visitedUrls.contains(url)) {
+                return;
+            }
+            visitedUrls.add(url);
         }
-        visitedUrls.add(url);
-        System.out.println("BREAKPOINT? visited urls " + visitedUrls.toString());
 
         PageParser.Result result = parserFactory.get(url).parse();
         for (Map.Entry<String, Integer> e : result.getWordCounts().entrySet()) {
             counts.compute(e.getKey(), (k, v) -> (v == null) ? e.getValue() : v + e.getValue());
         }
         List<CrawlAction> newActions = new ArrayList<CrawlAction>();
-        System.out.println("counts " + counts.toString());
         for (String link : result.getLinks()) {
             newActions.add(new CrawlAction(link, this.deadline,
                                         this.clock, this.ignoredUrls, this.maxDepth-1, this.counts, this.visitedUrls,
