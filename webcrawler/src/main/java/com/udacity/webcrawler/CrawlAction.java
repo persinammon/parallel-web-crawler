@@ -30,26 +30,29 @@ public final class CrawlAction extends RecursiveAction {
 
     private final int maxDepth;
 
-    @Inject
-    private PageParserFactory parserFactory;
+    private final PageParserFactory parserFactory;
 
 
     /**
      * Private constructor so can use the Builder pattern.
      */
     private CrawlAction(String url, Instant deadline,
-                        Clock clock, List<Pattern> ignoredUrls, int maxDepth) {
+                        Clock clock, List<Pattern> ignoredUrls, int maxDepth, Map<String, Integer> counts,
+                        Set<String> visitedUrls, PageParserFactory parserFactory) {
         this.url = url;
         this.deadline = deadline;
         this.clock = clock;
         this.ignoredUrls = ignoredUrls;
         this.maxDepth = maxDepth;
+        this.counts = counts;
+        this.visitedUrls = visitedUrls;
+        this.parserFactory = parserFactory;
     }
     @Override
     protected void compute() {
         System.out.println("compute reached");
 
-        if (clock.instant().isAfter(deadline)) {
+        if (maxDepth == 0 || clock.instant().isAfter(deadline)) {
             return;
         }
         for (Pattern pattern : ignoredUrls) {
@@ -59,22 +62,23 @@ public final class CrawlAction extends RecursiveAction {
         }
 
         //not thread-safe
-        if (ParallelWebCrawler.visitedUrls.contains(url)) {
+        if (visitedUrls.contains(url)) {
             System.out.println("visited urls fired");
             return;
         }
-        ParallelWebCrawler.visitedUrls.add(url);
-        System.out.println("BREAKPOINT? visited urls " + ParallelWebCrawler.visitedUrls.toString());
+        visitedUrls.add(url);
+        System.out.println("BREAKPOINT? visited urls " + visitedUrls.toString());
 
         PageParser.Result result = parserFactory.get(url).parse();
         for (Map.Entry<String, Integer> e : result.getWordCounts().entrySet()) {
-            ParallelWebCrawler.counts.compute(e.getKey(), (k, v) -> (v == null) ? e.getValue() : v + e.getValue());
+            counts.compute(e.getKey(), (k, v) -> (v == null) ? e.getValue() : v + e.getValue());
         }
         List<CrawlAction> newActions = new ArrayList<CrawlAction>();
         System.out.println("counts " + counts.toString());
         for (String link : result.getLinks()) {
             newActions.add(new CrawlAction(link, this.deadline,
-                                        this.clock, this.ignoredUrls, this.maxDepth));
+                                        this.clock, this.ignoredUrls, this.maxDepth-1, this.counts, this.visitedUrls,
+                                        this.parserFactory));
         }
         invokeAll(newActions);
     }
@@ -93,6 +97,8 @@ public final class CrawlAction extends RecursiveAction {
 
         private int maxDepthBuild;
 
+        private PageParserFactory parserFactoryBuild;
+
         public Builder setUrl(String url) {
             this.urlBuild = url;
             return this;
@@ -102,10 +108,23 @@ public final class CrawlAction extends RecursiveAction {
             return this;
         }
 
+        public Builder setVisitedUrls(Set<String> visitedUrls) {
+            this.visitedUrlsBuild = visitedUrls;
+            return this;
+        }
 
+        public Builder setCountsBuild(Map<String, Integer> counts) {
+            this.countsBuild = counts;
+            return this;
+        }
 
         public Builder setClock(Clock clock) {
             this.clockBuild = clock;
+            return this;
+        }
+
+        public Builder setParserFactory(PageParserFactory parserFactory) {
+            this.parserFactoryBuild = parserFactory;
             return this;
         }
 
@@ -122,7 +141,8 @@ public final class CrawlAction extends RecursiveAction {
 
         public CrawlAction build() {
             return new CrawlAction(urlBuild, deadlineBuild,
-                    clockBuild, ignoredUrlsBuild, maxDepthBuild);
+                    clockBuild, ignoredUrlsBuild, maxDepthBuild, countsBuild, visitedUrlsBuild,
+                    parserFactoryBuild);
         }
     }
 }
