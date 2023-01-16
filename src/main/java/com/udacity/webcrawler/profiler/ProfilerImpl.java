@@ -12,6 +12,7 @@ import java.io.BufferedWriter;
 import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
 
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Method;
 
 /**
  * Concrete implementation of the {@link Profiler}.
@@ -30,8 +31,18 @@ final class ProfilerImpl implements Profiler {
   }
 
   @Override
-  public <T> T wrap(Class<T> klass, T delegate) {
+  public <T> T wrap(Class<T> klass, T delegate) throws IllegalArgumentException{
     Objects.requireNonNull(klass);
+    boolean isProfiled = false;
+    for (Method m : klass.getDeclaredMethods()) {
+      if (m.getAnnotation(Profiled.class) != null) {
+        isProfiled = true;
+      }
+    }
+    if (!isProfiled) {
+      throw new IllegalArgumentException("No method with profile annotation");
+    }
+
     Object delegateProxy = Proxy.newProxyInstance(klass.getClassLoader(),
             new Class[]{klass}, new ProfilingMethodInterceptor(clock));
 

@@ -42,6 +42,8 @@ This is a sample configuration JSON given to the web crawler.
 - Used Factory pattern in `java/com/udacity/webcrawler/CrawlActionFactory.java,CrawlActionFactoryImpl.java`
 - Used Streams API and lambda function to eliminate verbose for loop to find the top `k` words with the highest count across all pages crawled in
 `java/com/udacity/webcrawler/WordCounts.java`
+- Using Java Reflections API to create a Dynamic Proxy wrapping method calls with timing the call in
+`java/com/udacity/webcrawler/profiler/*.java`
 
 ### How to Run and Test
 
@@ -68,5 +70,5 @@ mvn test
 
 ### Takeaway
 
-Overall, this was a fun use case and great starter project for flexing
-more industry-specific Java libraries and programming patterns.
+Overall, this was a fun use case and starter project for practicing
+more complex Java design patterns and APIs.
