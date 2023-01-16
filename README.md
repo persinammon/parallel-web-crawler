@@ -57,8 +57,9 @@ java -classpath target/udacity-webcrawler-1.0.jar com.udacity.webcrawler.main.We
 and the following to run unit tests:
 
 ```
-mvn test
+mvn test -Dtest={ConfigurationLoaderTest,CrawlResultWriterTest,WebCrawlerTest,ParallelWebCrawlerTest,WordCountsTest}
 ```
+
 ### Open-Source Third Party Java Libraries
 
 - jsoup
