@@ -1,4 +1,5 @@
 package com.udacity.webcrawler.profiler;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.Writer;
@@ -6,13 +7,8 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
 
 import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
-
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Method;
 
 /**
  * Concrete implementation of the {@link Profiler}.
@@ -20,54 +16,30 @@ import java.lang.reflect.Method;
 final class ProfilerImpl implements Profiler {
 
   private final Clock clock;
-  private final ProfilingState state;
+  private final ProfilingState state = new ProfilingState();
   private final ZonedDateTime startTime;
 
   @Inject
   ProfilerImpl(Clock clock) {
     this.clock = Objects.requireNonNull(clock);
     this.startTime = ZonedDateTime.now(clock);
-    this.state = new ProfilingState();
   }
 
   @Override
-  public <T> T wrap(Class<T> klass, T delegate) throws IllegalArgumentException{
+  public <T> T wrap(Class<T> klass, T delegate) {
     Objects.requireNonNull(klass);
-    boolean isProfiled = false;
-    for (Method m : klass.getDeclaredMethods()) {
-      if (m.getAnnotation(Profiled.class) != null) {
-        isProfiled = true;
-      }
-    }
-    if (!isProfiled) {
-      throw new IllegalArgumentException("No method with profile annotation");
-    }
 
-    Object delegateProxy = Proxy.newProxyInstance(klass.getClassLoader(),
-            new Class[]{klass}, new ProfilingMethodInterceptor(clock));
+    // TODO: Use a dynamic proxy (java.lang.reflect.Proxy) to "wrap" the delegate in a
+    //       ProfilingMethodInterceptor and return a dynamic proxy from this method.
+    //       See https://docs.oracle.com/javase/10/docs/api/java/lang/reflect/Proxy.html.
 
-    return (T) delegateProxy;
+    return delegate;
   }
 
   @Override
   public void writeData(Path path) {
-    BufferedWriter writer;
-    if (path.toFile().exists()) {
-      try {
-        writer = new BufferedWriter(new FileWriter(path.toString(), true));
-        writeData(writer);
-        writer.close();
-      } catch(Exception e) {
-      }
-    } else {
-      try {
-        writer = new BufferedWriter(new FileWriter(path.toString()));
-        writeData(writer);
-        writer.close();
-      } catch (Exception e) {
-
-      }
-    }
+    // TODO: Write the ProfilingState data to the given file path. If a file already exists at that
+    //       path, the new data should be appended to the existing file.
   }
 
   @Override
