@@ -54,9 +54,12 @@ public final class CrawlAction extends RecursiveAction {
     @Override
     protected void compute() {
 
-        if (maxDepth == 0 || clock.instant().isAfter(deadline)) {
+        if (maxDepth == 0 || clock.instant().compareTo(deadline) > 0) {
             return;
         }
+
+        System.out.println(maxDepth + " Max depth");
+
         for (Pattern pattern : ignoredUrls) {
             if (pattern.matcher(url).matches()) {
                 return;
@@ -77,10 +80,6 @@ public final class CrawlAction extends RecursiveAction {
         List<CrawlAction> newActions = new ArrayList<CrawlAction>();
         for (String link : result.getLinks()) {
             newActions.add(crawlFactory.get(link, maxDepth-1));
-
-            //newActions.add(new CrawlAction(link, this.deadline,
-                                        //this.clock, this.ignoredUrls, this.maxDepth-1, this.counts, this.visitedUrls,
-                                        //this.parserFactory));
         }
         invokeAll(newActions);
     }

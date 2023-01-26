@@ -71,9 +71,13 @@ final class SequentialWebCrawler implements WebCrawler {
       int maxDepth,
       Map<String, Integer> counts,
       Set<String> visitedUrls) {
-    if (maxDepth == 0 || clock.instant().isAfter(deadline)) {
+    if (maxDepth == 0 || clock.instant().compareTo(deadline) > 0) {
       return;
     }
+
+    System.out.println(maxDepth + " maxDepth");
+    System.out.println(visitedUrls + " visitedUrls");
+
     for (Pattern pattern : ignoredUrls) {
       if (pattern.matcher(url).matches()) {
         return;
@@ -83,6 +87,7 @@ final class SequentialWebCrawler implements WebCrawler {
       return;
     }
     visitedUrls.add(url);
+
     PageParser.Result result = parserFactory.get(url).parse();
     for (Map.Entry<String, Integer> e : result.getWordCounts().entrySet()) {
       if (counts.containsKey(e.getKey())) {
