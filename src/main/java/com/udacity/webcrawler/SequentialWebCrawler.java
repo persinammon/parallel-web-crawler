@@ -71,7 +71,7 @@ final class SequentialWebCrawler implements WebCrawler {
       int maxDepth,
       Map<String, Integer> counts,
       Set<String> visitedUrls) {
-    if (maxDepth == 0 || clock.instant().isAfter(deadline)) {
+    if (maxDepth == 0 || clock.instant().compareTo(deadline) > 0) {
       return;
     }
     for (Pattern pattern : ignoredUrls) {

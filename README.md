@@ -34,7 +34,7 @@ This is a sample configuration JSON given to the web crawler.
  * The two paths are where to write performance data and the results. If unset, these are printed to standard output.
  */
 ```
-### Creational Patterns and Libraries Used
+### Creational Patterns and Libraries Used, Bugs Squashed
 - Used Jackson to serialize and deserialize data from an Object to a JSON in `java/com/udacity/webcrawler/json/*.java`
 - Used Guice to reuse objects using dependency injection in `java/com/udacity/webcrawler/ParallelWebCrawler.java`
 - Used Builder pattern in `java/com/udacity/webcrawler/CrawlAction.java`
@@ -44,6 +44,10 @@ This is a sample configuration JSON given to the web crawler.
 `java/com/udacity/webcrawler/WordCounts.java`
 - Using Java Reflections API to create a Dynamic Proxy wrapping method calls with timing the call in
 `java/com/udacity/webcrawler/profiler/*.java`
+
+Squashed a bug in `src` code where `isAfter` method was not 
+working for nanoseconds after, at least. Switched to 
+`compareTo` method for judging if `Instant` is after `Instant deadline`.
 
 ### How to Run and Test
 

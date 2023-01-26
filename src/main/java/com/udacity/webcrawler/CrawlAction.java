@@ -54,9 +54,10 @@ public final class CrawlAction extends RecursiveAction {
     @Override
     protected void compute() {
 
-        if (maxDepth == 0 || clock.instant().isAfter(deadline)) {
+        if (maxDepth == 0 || clock.instant().compareTo(deadline) > 0) {
             return;
         }
+
         for (Pattern pattern : ignoredUrls) {
             if (pattern.matcher(url).matches()) {
                 return;

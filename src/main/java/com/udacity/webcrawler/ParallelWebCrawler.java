@@ -54,11 +54,13 @@ final class ParallelWebCrawler implements WebCrawler {
     Map<String, Integer> counts = Collections.synchronizedMap(new HashMap<>());
     Set<String> visitedUrls = Collections.synchronizedSet(new HashSet<>());
 
-    crawlFactory = new CrawlActionFactoryImpl(deadline, clock, ignoredUrls,
-            counts, visitedUrls, parserFactory);
+    if (maxDepth > 0) {
+      crawlFactory = new CrawlActionFactoryImpl(deadline, clock, ignoredUrls,
+              counts, visitedUrls, parserFactory);
 
-    for (String url : startingUrls) {
-      pool.invoke(crawlFactory.get(url, maxDepth));
+      for (String url : startingUrls) {
+        pool.invoke(crawlFactory.get(url, maxDepth));
+      }
     }
 
     if (counts.isEmpty()) {
