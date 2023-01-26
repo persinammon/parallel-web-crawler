@@ -6,6 +6,28 @@ of the crawler. I used Java concurrency library, third-party packages, and
 creational design patterns to implement a web crawler that takes 
 advantage of multiple cores to parallelize its workload.
 
+### Creational Patterns and Libraries Used, Bugs Squashed
+- Used Jackson to serialize and deserialize data from an Object to a JSON in `java/com/udacity/webcrawler/json/*.java`
+- Used Guice to reuse objects using dependency injection in `java/com/udacity/webcrawler/ParallelWebCrawler.java`
+- Used Builder pattern in `java/com/udacity/webcrawler/CrawlAction.java`
+- Used ForkJoinPool and recursive actions in `java/com/udacity/webcrawler/CrawlAction.java,ParallelWebCrawler.java`
+- Used Factory pattern in `java/com/udacity/webcrawler/CrawlActionFactory.java,CrawlActionFactoryImpl.java`
+- Used synchronized collections in `java/com/udacity/webcrawler/ParallelWebCrawler.java`
+- Used lock on set in `java/com/udacity/webcrawler/CrawlAction.java`
+- Used Streams API and lambda function to eliminate verbose for loop to find the top `k` words with the highest count across all pages crawled in
+`java/com/udacity/webcrawler/WordCounts.java`
+- Squashed a bug in original `src` code where `isAfter` method was not working for nanoseconds after. Switched to
+`compareTo` method for judging if `Instant` is after `Instant deadline`.
+
+### How to Run
+
+Clone and run the following to run:
+
+```
+mvn package
+java -classpath target/udacity-webcrawler-1.0.jar com.udacity.webcrawler.main.WebCrawlerMain src/main/config/sample_config.json
+```
+
 ### Configuration File
 
 This is a sample configuration JSON given to the web crawler.
@@ -34,35 +56,7 @@ This is a sample configuration JSON given to the web crawler.
  * The two paths are where to write performance data and the results. If unset, these are printed to standard output.
  */
 ```
-### Creational Patterns and Libraries Used, Bugs Squashed
-- Used Jackson to serialize and deserialize data from an Object to a JSON in `java/com/udacity/webcrawler/json/*.java`
-- Used Guice to reuse objects using dependency injection in `java/com/udacity/webcrawler/ParallelWebCrawler.java`
-- Used Builder pattern in `java/com/udacity/webcrawler/CrawlAction.java`
-- Used ForkJoinPool and recursive actions in `java/com/udacity/webcrawler/CrawlAction.java,ParallelWebCrawler.java`
-- Used Factory pattern in `java/com/udacity/webcrawler/CrawlActionFactory.java,CrawlActionFactoryImpl.java`
-- Used Streams API and lambda function to eliminate verbose for loop to find the top `k` words with the highest count across all pages crawled in
-`java/com/udacity/webcrawler/WordCounts.java`
-- Using Java Reflections API to create a Dynamic Proxy wrapping method calls with timing the call in
-`java/com/udacity/webcrawler/profiler/*.java`
 
-Squashed a bug in `src` code where `isAfter` method was not 
-working for nanoseconds after, at least. Switched to 
-`compareTo` method for judging if `Instant` is after `Instant deadline`.
-
-### How to Run and Test
-
-Clone and run the following to run:
-
-```
-mvn package
-java -classpath target/udacity-webcrawler-1.0.jar com.udacity.webcrawler.main.WebCrawlerMain src/main/config/sample_config.json
-```
-
-and the following to run unit tests:
-
-```
-mvn test -Dtest={ConfigurationLoaderTest,CrawlResultWriterTest,WebCrawlerTest,ParallelWebCrawlerTest,WordCountsTest}
-```
 
 ### Open-Source Third Party Java Libraries
 
@@ -75,5 +69,5 @@ mvn test -Dtest={ConfigurationLoaderTest,CrawlResultWriterTest,WebCrawlerTest,Pa
 
 ### Takeaway
 
-Overall, this was a fun use case and starter project for practicing
-more complex Java design patterns and APIs.
+Overall, this was a fun use case for practicing more 
+complex Java patterns and doing some difficult debugging.

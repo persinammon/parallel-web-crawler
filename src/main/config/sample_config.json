@@ -1,10 +1,8 @@
 {
-  "startPages": ["https://www.udacity.com/"],
-  "ignoredUrls": ["https://blog.udacity.com/.*"],
-  "ignoredWords": ["^.{1,3}$"],
+  "startPages": ["https://www.monicakumaran.ink/"],
+  "ignoredUrls": ["/twitter/", "/securitygladiators/", "/brokescholar/"],
   "parallelism": 4,
-  "maxDepth": 2,
-  "timeoutSeconds": 5,
-  "popularWordCount": 5,
-  "profileOutputPath": "profileData.txt"
+  "maxDepth": 1000,
+  "timeoutSeconds": 1000,
+  "popularWordCount": 10
 }
