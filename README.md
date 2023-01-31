@@ -10,7 +10,7 @@ of the crawler.
 - Used Builder pattern in [`java/com/udacity/webcrawler/CrawlAction.java`](https://github.com/persinammon/parallel-web-crawler/blob/main/src/main/java/com/udacity/webcrawler/CrawlAction.java#L87)
 - Used ForkJoinPool and recursive actions in [`java/com/udacity/webcrawler/CrawlAction.java,ParallelWebCrawler.java`](https://github.com/persinammon/parallel-web-crawler/blob/main/src/main/java/com/udacity/webcrawler/ParallelWebCrawler.java#L42)
 - Used Factory pattern in [`java/com/udacity/webcrawler/CrawlActionFactory.java,CrawlActionFactoryImpl.java`](https://github.com/persinammon/parallel-web-crawler/blob/main/src/main/java/com/udacity/webcrawler/CrawlActionFactoryImpl.java)
-- Used synchronized collections in [`java/com/udacity/webcrawler/ParallelWebCrawler.java`](https://github.com/persinammon/parallel-web-cra)
+- Used synchronized collections in [`java/com/udacity/webcrawler/ParallelWebCrawler.java`](https://github.com/persinammon/parallel-web-crawler/blob/main/src/main/java/com/udacity/webcrawler/ParallelWebCrawler.java#L54)
 - Used lock on set in [`java/com/udacity/webcrawler/CrawlAction.java`](https://github.com/persinammon/parallel-web-crawler/blob/main/src/main/java/com/udacity/webcrawler/CrawlAction.java#L69)
 - Used Streams API and lambda function to eliminate verbose for loop to find the top `k` words with the highest count across all pages crawled in
 [`java/com/udacity/webcrawler/WordCounts.java`](https://github.com/persinammon/parallel-web-crawler/blob/main/src/main/java/com/udacity/webcrawler/WordCounts.java#L28)
