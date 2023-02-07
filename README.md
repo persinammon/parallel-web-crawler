@@ -2,7 +2,7 @@
 
 I was given a Java implementation of a single-threaded web crawler
 and unit tests. I implemented a multi-threaded version
-of the crawler. 
+of the crawler. Credit to the original, very well-planned and dense project goes to [here](https://github.com/udacity/cd0381-advanced-java-programming-techniques-projectstarter).
 
 ### Creational Patterns and Libraries Used, Bugs Squashed
 - Used Jackson to serialize and deserialize data from an Object to a JSON in [`java/com/udacity/webcrawler/json/*.java`](https://github.com/persinammon/parallel-web-crawler/tree/main/src/main/java/com/udacity/webcrawler/json)
