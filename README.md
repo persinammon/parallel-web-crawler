@@ -1,4 +1,4 @@
-# Parallel Web Crawler
+# Implementing Multi-Threading to Single-Threaded Web Crawler
 
 I was given a Java implementation of a single-threaded web crawler
 and unit tests. I implemented a multi-threaded version
